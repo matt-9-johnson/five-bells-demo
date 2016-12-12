@@ -1,10 +1,10 @@
 'use strict'
 
 exports.graph = {
-  numLedgers: 8,
-  numConnectors: 7,
-  barabasiAlbertConnectedCore: 2,
-  barabasiAlbertConnectionsPerNewNode: 2,
+  numLedgers: 4,
+  numConnectors: 3,
+  barabasiAlbertConnectedCore: 1,
+  barabasiAlbertConnectionsPerNewNode: 1,
   adminUser: process.env.ADMIN_USER || 'admin',
   adminPass: process.env.ADMIN_PASS || 'admin'
 }
