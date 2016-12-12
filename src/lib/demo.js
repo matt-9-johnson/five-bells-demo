@@ -73,10 +73,9 @@ class Demo {
     // N .. number of nodes
     // m0 .. size of connected core (m0 <= N)
     // M .. (M <= m0)
-    this.graph = randomgraph.BarabasiAlbert(
-      this.numLedgers,
-      this.barabasiAlbertConnectedCore,
-      this.barabasiAlbertConnectionsPerNewNode)
+    this.graph = randomgraph.BalancedTree(
+      (this.numLedgers-1),
+      1)
     this.connectorEdges = new Array(this.numConnectors)
     this.connectorNames = new Array(this.numConnectors)
     for (let i = 0; i < this.numConnectors; i++) {
