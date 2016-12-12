@@ -71,23 +71,15 @@ class Demo {
   }
 
   * _start () {
-    for (let i = 0; i < this.numLedgers; i++) {
-      yield this.startLedger('demo.ledger' + i + '.', 3000 + i)
-    }
+    yield this.startLedger('demo.ledger.', 3002)
 
-    for (let i = 0; i < this.numConnectors; i++) {
-      yield this.setupConnectorAccounts(this.connectorNames[i], this.connectorEdges[i])
-    }
-    for (let i = 0; i < this.numConnectors; i++) {
-      yield this.startConnector(this.connectorNames[i], this.connectorEdges[i])
-    }
+    yield this.services.updateAccount('demo.ledger.', 'cloud', {balance: '1000000000', connector: 'demo.ledger.cloud'})
 
-    yield this.services.startVisualization(5000)
   }
 
   * startLedger (ledger, port) {
-    yield this.services.startLedger(ledger, 'localhost', port, {
-      recommendedConnectors: this.ledgerConnectors[ledger]
+    yield this.services.startLedger(ledger, 'magic.local', port, {
+      recommendedConnectors: 'cloud' 
     })
     yield this.services.updateAccount(ledger, 'alice', {balance: '1000000000'})
     yield this.services.updateAccount(ledger, 'bob', {balance: '1000000000'})
@@ -103,8 +95,6 @@ class Demo {
 
   * setupConnectorAccounts (connector, edges) {
     for (const edge of edges) {
-      yield this.services.updateAccount(edge.source, connector, {balance: '1000000000', connector: edge.source + connector})
-      yield this.services.updateAccount(edge.target, connector, {balance: '1000000000', connector: edge.target + connector})
     }
   }
 
