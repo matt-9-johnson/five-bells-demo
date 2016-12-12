@@ -1,8 +1,8 @@
 'use strict'
 
 exports.graph = {
-  numLedgers: 4,
-  numConnectors: 3,
+  numLedgers: 2,
+  numConnectors: 1,
   adminUser: process.env.ADMIN_USER || 'admin',
   adminPass: process.env.ADMIN_PASS || 'admin'
 }

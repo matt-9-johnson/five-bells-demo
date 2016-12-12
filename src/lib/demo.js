@@ -47,7 +47,6 @@ class Demo {
       edge.target_currency = 'USD'
       edge.source = 'demo.ledger' + source + '.'
       edge.target = 'demo.ledger' + target + '.'
-        console.log('LOGGING edge %s -> %s', edge.source, edge.target)
       this.ledgerHosts[edge.source] = 'http://localhost:' + (3000 + source)
       this.ledgerHosts[edge.target] = 'http://localhost:' + (3000 + target)
       _this.connectorEdges[i % _this.numConnectors].push(edge)
@@ -59,8 +58,6 @@ class Demo {
       if (!this.ledgerConnectors[edge.target]) {
         this.ledgerConnectors[edge.target] = []
       }
-
-        console.log('LOGGING edge keys:' + Object.keys(edge))
 
       this.ledgerConnectors[edge.target].push(this.connectorNames[i % _this.numConnectors])
     }, this)
@@ -78,6 +75,19 @@ class Demo {
     for (let i = 0; i < this.numConnectors; i++) {
       yield this.setupConnectorAccounts(this.connectorNames[i], this.connectorEdges[i])
     }
+
+      // Add half of a connector account-- can be ignored for now since the name cloud is the same.
+
+      // Add an edge to the connector description that links out to the remote ledger.
+      this.temp_edge = {}
+      this.temp_edge.source_currency = 'USD'
+      this.temp_edge.target_currency = 'USD'
+      this.temp_edge.source = 'demo.ledger0.'
+      this.temp_edge.target = 'demo.ledger.'
+      this.ledgerHosts[this.temp_edge.source] = 'http://localhost:' + (3000)
+      this.ledgerHosts[this.temp_edge.target] = 'http://magic.local:' + (3002)
+      this.connectorEdges[0].push(this.temp_edge)
+
     for (let i = 0; i < this.numConnectors; i++) {
       yield this.startConnector(this.connectorNames[i], this.connectorEdges[i])
     }
