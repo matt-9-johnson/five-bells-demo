@@ -6,44 +6,7 @@ const randomgraph = require('randomgraph')
 const ServiceManager = require('five-bells-service-manager')
 
 const connectorNames = [
-  'mark', 'mary', 'martin', 'millie',
-  'mia', 'mike', 'mesrop', 'michelle',
-  'milo', 'miles', 'michael', 'micah', 'max'
-]
-
-const currencies = [
-  { code: 'AUD', symbol: 'A$' },
-  { code: 'BGN', symbol: 'лв' },
-  { code: 'BRL', symbol: 'R$' },
-  { code: 'CAD', symbol: 'C$' },
-  { code: 'CHF', symbol: 'Fr.' },
-  { code: 'CNY', symbol: '¥' },
-  { code: 'CZK', symbol: 'Kč' },
-  { code: 'DKK', symbol: 'kr.' },
-  { code: 'EUR', symbol: '€' },
-  { code: 'GBP', symbol: '£' },
-  { code: 'HKD', symbol: 'HK$' },
-  { code: 'HRK', symbol: 'kn' },
-  { code: 'HUF', symbol: 'Ft' },
-  { code: 'IDR', symbol: 'Rp' },
-  { code: 'ILS', symbol: '₪' },
-  { code: 'INR', symbol: '₹' },
-  { code: 'JPY', symbol: '¥' },
-  { code: 'KRW', symbol: '₩' },
-  { code: 'MXN', symbol: 'Mex$' },
-  { code: 'MYR', symbol: 'RM' },
-  { code: 'NOK', symbol: 'kr' },
-  { code: 'NZD', symbol: 'NZ$' },
-  { code: 'PHP', symbol: '₱' },
-  { code: 'PLN', symbol: 'zł' },
-  { code: 'RON', symbol: 'lei' },
-  { code: 'RUB', symbol: '₽' },
-  { code: 'SEK', symbol: 'kr' },
-  { code: 'SGD', symbol: 'S$' },
-  { code: 'THB', symbol: '฿' },
-  { code: 'TRY', symbol: '₺' },
-  { code: 'USD', symbol: '$' },
-  { code: 'ZAR', symbol: 'R' }
+  'cloud'
 ]
 
 class Demo {
@@ -58,8 +21,6 @@ class Demo {
 
     this.numLedgers = opts.numLedgers
     this.numConnectors = opts.numConnectors
-    this.barabasiAlbertConnectedCore = opts.barabasiAlbertConnectedCore || 2
-    this.barabasiAlbertConnectionsPerNewNode = opts.barabasiAlbertConnectionsPerNewNode || 2
 
     if (process.env.npm_node_execpath && process.env.npm_execpath) {
       this.npmPrefix = process.env.npm_node_execpath + ' ' + process.env.npm_execpath
@@ -67,12 +28,7 @@ class Demo {
       this.npmPrefix = 'npm'
     }
 
-    // Connector graph
-    // Barabási–Albert (N, m0, M)
-    //
-    // N .. number of nodes
-    // m0 .. size of connected core (m0 <= N)
-    // M .. (M <= m0)
+    // Connector graph hub and spoke
     this.graph = randomgraph.BalancedTree(
       (this.numLedgers-1),
       1)
@@ -83,16 +39,15 @@ class Demo {
       this.connectorNames[i] = connectorNames[i] || 'connector' + i
     }
     this.ledgerHosts = {}
-    // Connector usernames per ledger
-    // { ledgerPrefix → [ connectorIndex ] }
     this.ledgerConnectors = {}
     this.graph.edges.forEach(function (edge, i) {
       const source = edge.source
       const target = edge.target
-      edge.source_currency = currencies[source % currencies.length].code
-      edge.target_currency = currencies[target % currencies.length].code
+      edge.source_currency = 'USD'
+      edge.target_currency = 'USD'
       edge.source = 'demo.ledger' + source + '.'
       edge.target = 'demo.ledger' + target + '.'
+        console.log('LOGGING edge %s -> %s', edge.source, edge.target)
       this.ledgerHosts[edge.source] = 'http://localhost:' + (3000 + source)
       this.ledgerHosts[edge.target] = 'http://localhost:' + (3000 + target)
       _this.connectorEdges[i % _this.numConnectors].push(edge)
@@ -100,9 +55,13 @@ class Demo {
         this.ledgerConnectors[edge.source] = []
       }
       this.ledgerConnectors[edge.source].push(this.connectorNames[i % _this.numConnectors])
+
       if (!this.ledgerConnectors[edge.target]) {
         this.ledgerConnectors[edge.target] = []
       }
+
+        console.log('LOGGING edge keys:' + Object.keys(edge))
+
       this.ledgerConnectors[edge.target].push(this.connectorNames[i % _this.numConnectors])
     }, this)
   }
