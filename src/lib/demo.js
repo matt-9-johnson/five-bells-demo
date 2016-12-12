@@ -127,7 +127,7 @@ class Demo {
   }
 
   * startLedger (ledger, port) {
-    yield this.services.startLedger(ledger, port, {
+    yield this.services.startLedger(ledger, 'localhost', port, {
       recommendedConnectors: this.ledgerConnectors[ledger]
     })
     yield this.services.updateAccount(ledger, 'alice', {balance: '1000000000'})
