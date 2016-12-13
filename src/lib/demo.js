@@ -22,6 +22,8 @@ class Demo {
     this.numLedgers = opts.numLedgers
     this.numConnectors = opts.numConnectors
 
+    this.externalLedgers = opts.externalLedgers
+
     if (process.env.npm_node_execpath && process.env.npm_execpath) {
       this.npmPrefix = process.env.npm_node_execpath + ' ' + process.env.npm_execpath
     } else {
@@ -76,23 +78,29 @@ class Demo {
       yield this.setupConnectorAccounts(this.connectorNames[i], this.connectorEdges[i])
     }
 
-      // Add half of a connector account-- can be ignored for now since the name cloud is the same.
+    // Iterate over all external ledgers
+    Object.keys(this.externalLedgers).forEach((key,index) => {
+      console.log("Adding external ledger: " + key)
+      // Add half of a connector account-- can be ignored for now
+      // since the account name cloud is the same and used everywhere.
 
-      // Add an edge to the connector description that links out to the remote ledger.
+      // Add an edge to the connector description that links out to
+      // the remote ledger from the root ledger0.
       this.temp_edge = {}
       this.temp_edge.source_currency = 'USD'
       this.temp_edge.target_currency = 'USD'
       this.temp_edge.source = 'demo.ledger0.'
-      this.temp_edge.target = 'demo.ledger.'
+      this.temp_edge.target = key
       this.ledgerHosts[this.temp_edge.source] = 'http://localhost:' + (3000)
-      this.ledgerHosts[this.temp_edge.target] = 'http://magic.local:' + (3002)
+      this.ledgerHosts[key] = this.externalLedgers[key]
       this.connectorEdges[0].push(this.temp_edge)
+    })
 
     for (let i = 0; i < this.numConnectors; i++) {
       yield this.startConnector(this.connectorNames[i], this.connectorEdges[i])
     }
 
-    yield this.services.startVisualization(5000)
+    yield this.services.startVisualization(5000, this.externalLedgers)
   }
 
   * startLedger (ledger, port) {
