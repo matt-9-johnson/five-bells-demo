@@ -22,6 +22,12 @@ class Demo {
     this.numLedgers = opts.numLedgers
     this.numConnectors = opts.numConnectors
 
+    //Added client hostname and port to options
+    this.clientHostname = opts.clientHostname
+    this.clientPort = opts.clientPort
+    console.log('CLIENT HOSTNAME ' + this.clientHostname)
+    console.log('CLIENT PORT ' + this.clientPort)
+
     if (process.env.npm_node_execpath && process.env.npm_execpath) {
       this.npmPrefix = process.env.npm_node_execpath + ' ' + process.env.npm_execpath
     } else {
@@ -78,7 +84,7 @@ class Demo {
   }
 
   * startLedger (ledger, port) {
-    yield this.services.startLedger(ledger, '172.28.7.91', port, {
+    yield this.services.startLedger(ledger, this.clientHostname, this.clientPort, {
       recommendedConnectors: 'cloud' 
     })
     yield this.services.updateAccount(ledger, 'alice', {balance: '1000000000'})
