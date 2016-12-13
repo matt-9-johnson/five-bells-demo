@@ -78,7 +78,7 @@ class Demo {
   }
 
   * startLedger (ledger, port) {
-    yield this.services.startLedger(ledger, 'magic.local', port, {
+    yield this.services.startLedger(ledger, '172.28.7.91', port, {
       recommendedConnectors: 'cloud' 
     })
     yield this.services.updateAccount(ledger, 'alice', {balance: '1000000000'})
